@@ -1,42 +1,33 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         var br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
-        var arr = new int[N];
-        
+        int[] arr = new int[N];
         var st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < N; i++) {
-            arr[i] = Integer.parseInt(st.nextToken());
-        }
-        
+        for (int i = 0; i < N; i++) arr[i] = Integer.parseInt(st.nextToken());
         Arrays.sort(arr);
-        
-        int minEven = Integer.MAX_VALUE;
-        int minOdd = Integer.MAX_VALUE;
-        
-        for (int i = 0; i < N - 1; i++) {
-            for (int j = i + 1; j < Math.min(i + 100, N); j++) {
-                int diff = arr[j] - arr[i];
-                if (diff % 2 == 0) {
-                    minEven = Math.min(minEven, diff);
-                    if (minEven == 2) break;
-                } else {
-                    minOdd = Math.min(minOdd, diff);
-                    if (minOdd == 1) break;
-                }
-                
-                if (minEven == 2 && minOdd == 1) break;
-            }
-            
-            if (minEven == 2 && minOdd == 1) break;
+        List<Integer> even = new ArrayList<>(), odd = new ArrayList<>();
+        for (int x : arr) {
+            if ((x & 1) == 0) even.add(x);
+            else odd.add(x);
         }
-        
-        System.out.print((minEven == Integer.MAX_VALUE ? -1 : minEven) + " " + 
-                        (minOdd == Integer.MAX_VALUE ? -1 : minOdd));
+        int minEven = Integer.MAX_VALUE, minOdd = Integer.MAX_VALUE;
+        for (int i = 1; i < even.size(); i++)
+            minEven = Math.min(minEven, even.get(i) - even.get(i - 1));
+        for (int i = 1; i < odd.size(); i++)
+            minEven = Math.min(minEven, odd.get(i) - odd.get(i - 1));
+        int i = 0, j = 0;
+        while (i < even.size() && j < odd.size()) {
+            int diff = Math.abs(even.get(i) - odd.get(j));
+            minOdd = Math.min(minOdd, diff);
+            if (even.get(i) < odd.get(j)) i++;
+            else j++;
+        }
+        System.out.print((minEven == Integer.MAX_VALUE ? -1 : minEven) + " ");
+        System.out.println((minOdd == Integer.MAX_VALUE ? -1 : minOdd));
     }
 }
